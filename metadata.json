@@ -8,7 +8,7 @@
   },
   "ui": {
     "dashboard-tab": {
-      "title": "Yugabytedb-Extension",
+      "title": "YugabyteDB",
       "src": "index.html",
       "root": "ui",
       "backend": {
