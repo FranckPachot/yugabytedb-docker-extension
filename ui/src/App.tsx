@@ -10,9 +10,31 @@ function useDockerDesktopClient() {
 
 
 export function App() {
-  const [ready, setReady] = useState<boolean>(true);
+  const [ready, setReady] = useState<boolean>(false);
   const [logs, setLogs] = useState<string>("fetching logs...");
   const ddClient = useDockerDesktopClient();
+
+useEffect(() => {
+    
+      const checkIfYugabyteDBIsReady = async () => {
+         const result = String(await ddClient.extension.vm?.service?.get('http://localhost:7000'));
+         // wait to find a leader
+         const ready = result.includes(">LEADER<")
+         //const ready = Boolean(result);
+         if (ready) {
+           clearInterval(timer);
+         }
+         setReady(ready);
+    };
+
+    let timer = setInterval(() => {
+      checkIfYugabyteDBIsReady();
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (ready) {
@@ -28,8 +50,7 @@ export function App() {
           <>
             <LinearProgress />
             <Typography mt={2}>
-              Waiting for OracleXE to be ready. It may take several seconds if
-              it's the first time.
+              Waiting for YugabyteDB to start and have a master leader
             </Typography>
           </>
         )}
