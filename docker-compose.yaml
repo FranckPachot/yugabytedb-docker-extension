@@ -1,3 +1,11 @@
 services:
   yugabytedb-extension:
     image: ${DESKTOP_PLUGIN_IMAGE}
+
+  yugabytedb:
+    image: docker.io/yugabytedb/yugabyte:latest
+    command: |
+     bin/yugabyted start --daemon=false --tserver_flags='ysql_enable_auth=true'
+    ports:
+      - 5433:5433
+      - 7000:7000
