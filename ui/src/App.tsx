@@ -14,7 +14,7 @@ export function App() {
   const [logs, setLogs] = useState<string>("fetching logs...");
   const ddClient = useDockerDesktopClient();
 
-useEffect(() => {
+  useEffect(() => {
     
       const checkIfYugabyteDBIsReady = async () => {
          const result = String(await ddClient.extension.vm?.service?.get('http://localhost:7000'));
@@ -50,7 +50,8 @@ useEffect(() => {
           <>
             <LinearProgress />
             <Typography mt={2}>
-              Waiting for YugabyteDB to start and have a master leader
+              Waiting for YugabyteDB to start... 
+              UI will be available on port 7000, PostgreSQL endpoint on port 5433, Cassandra endpoint on port 9402
             </Typography>
           </>
         )}
