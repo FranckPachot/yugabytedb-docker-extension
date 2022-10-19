@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LinearProgress, Typography, Grid } from '@mui/material';
+import { LinearProgress, Typography, Grid, Box } from '@mui/material';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 
 const client = createDockerDesktopClient();
@@ -11,17 +11,20 @@ function useDockerDesktopClient() {
 
 export function App() {
   const [ready, setReady] = useState<boolean>(false);
-  const [logs, setLogs] = useState<string>("fetching logs...");
   const ddClient = useDockerDesktopClient();
 
   useEffect(() => {
     
       const checkIfYugabyteDBIsReady = async () => {
+         console.log('Checking if ready...')
+         // waiting to see a leader in the yb-master UI
          const result = String(await ddClient.extension.vm?.service?.get('http://localhost:7000'));
          // wait to find a leader
+         console.log(result)
          const ready = result.includes(">LEADER<")
-         //const ready = Boolean(result);
+         //TODO: add ysqlsh test
          if (ready) {
+           console.log('ready.')
            clearInterval(timer);
          }
          setReady(ready);
@@ -36,26 +39,30 @@ export function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (ready) {
-      window.location.href = 'http://localhost:7000';
-    }
-  }, [ready]);
+ // useEffect(() => {
+ //   if (ready) {
+ //     window.location.href = 'http://localhost:7000';
+ //   }
+ // }, [ready]);
 
-
-  return (
-    <Grid container flex={1} direction="column" spacing={4}>
-      <Grid item justifyContent="center" textAlign="center" minHeight="80px">
-        {!ready && (
-          <>
-            <LinearProgress />
+return (
+    <>
+      {!ready && (
+        <Grid container flex={1} direction="column" padding="16px 32px" height="100%" justifyContent="center" alignItems="center">
+          <Grid item>
+            <LinearProgress/>
             <Typography mt={2}>
-              Waiting for YugabyteDB to start... 
-              UI will be available on port 7000, PostgreSQL endpoint on port 5433, Cassandra endpoint on port 9402
+              Waiting for YugabyteDB to be ready (GUI on http://localhost:7000)
             </Typography>
-          </>
-        )}
-      </Grid>
-    </Grid>
+          </Grid>
+        </Grid>
+      )}
+      { (
+        <Box display="flex" flex={1} width="100%" height="100%">
+          <iframe src='http://yb0:7000/' width="100%" height="100%" />
+        </Box>
+      )}
+    </>
   );
+
 }

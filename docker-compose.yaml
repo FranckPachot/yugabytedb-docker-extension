@@ -4,8 +4,8 @@ services:
 
   yugabytedb:
     image: docker.io/yugabytedb/yugabyte:2.15.1.0-b175
-    hostname: yb1
-    command: bin/yugabyted start --daemon=false --listen=yb1 --tserver_flags='ysql_enable_auth=false'
+    hostname: yb0
+    command: bin/yugabyted start --daemon=false --listen=0.0.0.0 --tserver_flags='ysql_enable_auth=false'
     ports:
       - 5433:5433
       - 7000:7000
